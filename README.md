@@ -19,22 +19,34 @@ The kernel does not care that there are two separate operating systems installed
 ## Setting up docker
 
 First you need to download, install, and run docker. Instructions are online. Docker is a daemon (a background application), plus other components, that manages the containers. Once installed, you should be able to type
+
 ```
 docker run --rm -ti debian bash
 ```
-and end up with a command prompt running inside the container. This command downloads the debian-slim image and uses that image to bootstrap the container. Here is example output:
+
+and end up with a command prompt running inside the container. This command downloads the debian image and uses that image to bootstrap the container. Here is example output:
+
 ```
-keittth@INTB-A89940 ~ % docker run --rm -ti debian bash     
+keittth@INTB-A89940 ~ % docker run --rm -ti debian bash
 Unable to find image 'debian:latest' locally
 latest: Pulling from library/debian
 Digest: sha256:bd73076dc2cd9c88f48b5b358328f24f2a4289811bd73787c031e20db9f97123
 Status: Downloaded newer image for debian:latest
 root@e409e5f086f4:/# whoami
 root
-root@e409e5f086f4:/# ls 
+root@e409e5f086f4:/# ls
 bin  boot  dev	etc  home  lib	media  mnt  opt  proc  root  run  sbin	srv  sys  tmp  usr  var
 root@e409e5f086f4:/# exit
 exit
-keittth@INTB-A89940 ~ % 
+keittth@INTB-A89940 ~ %
 ```
 
+What this did is download a prebuilt image of the Debian Linux operating system and then launched the container and ran the `bash` shell. By default, you run as the Linux `root` superuser that has all privaleges _within the container_ but not outside the container. This is important. Deleting a file while inside the container _does not influence the host filesystem_, unless one explicitely mounts the host file system into the container with write permissions, a topic we will return to later.
+
+The flag `--rm` tells docker to remove the container after running it. This is nice for reproducibility as each time the container is constructed from scratch. I also specified `-t` and `-i` together as `-ti`. The `-t` flag allocates a tty so that you can interact with the container on the command line. Tty's are related to teletypes, those giant machines that make loud printing noises in old movies. The `-i` flag makes the session interactive. If you do not need to type messages in the container, you can omit them and the program will just run, for example,
+```
+keittth@INTB-A89940 ~ % docker run --rm -ti debian ls  
+bin  boot  dev	etc  home  lib	media  mnt  opt  proc  root  run  sbin	srv  sys  tmp  usr  var
+keittth@INTB-A89940 ~ % 
+```
+simply runs the `ls` command and exists. That's pretty nifty if you need to run a command that is not installed on your computer but is available in an existing docker image you can download.
