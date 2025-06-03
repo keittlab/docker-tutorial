@@ -44,9 +44,32 @@ keittth@INTB-A89940 ~ %
 What this did is download a prebuilt image of the Debian Linux operating system and then launched the container and ran the `bash` shell. By default, you run as the Linux `root` superuser that has all privaleges _within the container_ but not outside the container. This is important. Deleting a file while inside the container _does not influence the host filesystem_, unless one explicitely mounts the host file system into the container with write permissions, a topic we will return to later.
 
 The flag `--rm` tells docker to remove the container after running it. This is nice for reproducibility as each time the container is constructed from scratch. I also specified `-t` and `-i` together as `-ti`. The `-t` flag allocates a tty so that you can interact with the container on the command line. Tty's are related to teletypes, those giant machines that make loud printing noises in old movies. The `-i` flag makes the session interactive. If you do not need to type messages in the container, you can omit them and the program will just run, for example,
+
 ```
-keittth@INTB-A89940 ~ % docker run --rm -ti debian ls  
-bin  boot  dev	etc  home  lib	media  mnt  opt  proc  root  run  sbin	srv  sys  tmp  usr  var
-keittth@INTB-A89940 ~ % 
+keittth@INTB-A89940 ~ % docker run --rm debian ls
+bin
+boot
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+keittth@INTB-A89940 ~ %
 ```
-simply runs the `ls` command and exists. That's pretty nifty if you need to run a command that is not installed on your computer but is available in an existing docker image you can download.
+
+simply runs the `ls` command and exists. Notice in this case the output is a bit different because there was not post-processing. The text was simply spit out directly to the standard output. That's pretty nifty if you need to run a command that is not installed on your computer but is available in an existing docker image you can download.
+
+Note that if you are using the docker desktop, you can also do these commands if you hunt around in the interface. In the dashboard, you can download an image and run it as a container. There are tabs for inspecting the container and issuing commands directly inside the container. Try it out.
+
+
