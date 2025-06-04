@@ -43,7 +43,7 @@ keittth@INTB-A89940 ~ %
 
 What this did is download a prebuilt image of the Debian Linux operating system and then launched the container and ran the `bash` shell. By default, you run as the Linux `root` superuser that has all privaleges _within the container_ but not outside the container. This is important. Deleting a file while inside the container _does not influence the host filesystem_, unless one explicitely mounts the host file system into the container with write permissions, a topic we will return to later.
 
-The flag `--rm` tells docker to remove the container after running it. This is nice for reproducibility as each time the container is constructed from scratch. I also specified `-t` and `-i` together as `-ti`. The `-t` flag allocates a tty so that you can interact with the container on the command line. Tty's are related to teletypes, those giant machines that make loud printing noises in old movies. The `-i` flag makes the session interactive. If you do not need to type messages in the container, you can omit them and the program will just run, for example,
+The flag `--rm` tells docker to remove the container after running it. Built containers exist on the file system and can be run repeatedly. The `--rm` switch just cleans up automatically. I also specified `-t` and `-i` together as `-ti`. The `-t` flag allocates a tty so that you can interact with the container on the command line. Tty's are related to teletypes, those giant machines that make loud printing noises in old movies. The `-i` flag makes the session interactive. If you do not need to type messages in the container, you can omit them and the program will just run, for example,
 
 ```
 keittth@INTB-A89940 ~ % docker run --rm debian ls
@@ -131,5 +131,16 @@ minitest                   latest          05689c0132c1   5 days ago      8.31MB
 
 I will add this docker file to the repo on github. You can clone the repo and run the command without creating the file. Note that I gave the image a _tag_ with the `-t` switch. It is helpful to name your images so you can find them later. Docker tracks the images by their cryptographic signatures and internal id's. If you want to list the images on your system, you can type `docker image ls`. You can remove images using `docker image rm <image id>` and you can get rid of zombie images with `docker image prune`.
 
+Note that here I used Alpine Linux, a variant that is specifically targeted at minimal systems and ideal for keeping your docker images small. It is very limited and can cause incompatibilities with complicated applications. You may prefer something like `bookworm-slim`, a cut-down version of Debian. It is generally a good idea to specify versions of software when using docker, especially if you are publishing a reproducible workflow.
+
 Don't worry to much about keeping images around. I routinely delete them all for various reasons. Images are _meant to be disposable_. Never store anything important inside an image. Keep the docker file and you have all of the commands needed to fully reproduce your workflow. Images are not virtual machines. Do not think about them like installing a computer inside your computer. They simply isolate a file namespace from your main system. Build your images to do exactly one thing. It is just an ephemeral environbment in which to run an application.
 
+As an example, we can create a file in our `minitest` container and see if we can get it back.
+
+```
+tkeitt@geo:~/projects/docker-tutorial/docker-test$ docker run --rm minitest touch testfile
+tkeitt@geo:~/projects/docker-tutorial/docker-test$ docker run --rm minitest ls testfile
+ls: testfile: No such file or directory
+```
+
+As you can see, the created file did not persist across sessions.
