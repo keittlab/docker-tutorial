@@ -129,3 +129,4 @@ minitest                   latest          05689c0132c1   5 days ago      8.31MB
 # continues on because I have a bunch of orphan images on geo
 ```
 
+I will add this docker file to the repo on github. 
