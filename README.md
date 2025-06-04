@@ -72,4 +72,60 @@ simply runs the `ls` command and exists. Notice in this case the output is a bit
 
 Note that if you are using the docker desktop, you can also do these commands if you hunt around in the interface. In the dashboard, you can download an image and run it as a container. There are tabs for inspecting the container and issuing commands directly inside the container. Try it out.
 
+## Images
+
+In docker, an image is a static snapshot of the file system / namespace. Images are built from instructions and then stored locally or may be uploaded to a registry. Docker runs a registry, Docker Hub, that contains 10's of thousands of images covering many applications. There are other registries as well and you can run your own registry, although it is a pain to setup the certs as everything has to go over encrypted channels (https).
+
+To build your own image, you create a dockerfile and run `docker build -f my_docker_file`. If you name your docker file `Dockerfile` and run the command in the same directory, you can simply do `docker build .`, where `.` specifies the current directory. Note that I am shoing command line commands. You can do this in the dashboard as well and `vscode` has plugins to manage all of this.
+
+Lets try it out. I am doing this in Ubuntu Linux. The commands are the same in the OSX shell or Windows linux subsystem.
+
+```
+mkdir docker-test
+cd docker-test
+# This writes the lines after into a file
+cat<<EOF > Dockerfile
+FROM alpine:latest
+CMD ["echo", "Hello, Docker!"]
+EOF
+docker build . -t minitest
+docker run minitest
+```
+
+If I paste this into my terminal logged into the Ubuntu server, I see:
+
+```
+tkeitt@geo:~/projects/docker-tutorial$ mkdir docker-test
+cd docker-test
+# This writes the lines after into a file
+cat<<EOF > Dockerfile
+FROM alpine:latest
+CMD ["echo", "Hello, Docker!"]
+EOF
+docker build . -t minitest
+docker run minitest
+[+] Building 1.2s (6/6) FINISHED                                                                                                                 docker:default
+ => [internal] load build definition from Dockerfile                                                                                                       0.0s
+ => => transferring dockerfile: 87B                                                                                                                        0.0s
+ => [internal] load metadata for docker.io/library/alpine:latest                                                                                           0.8s
+ => [auth] library/alpine:pull token for registry-1.docker.io                                                                                              0.0s
+ => [internal] load .dockerignore                                                                                                                          0.0s
+ => => transferring context: 2B                                                                                                                            0.0s
+ => [1/1] FROM docker.io/library/alpine:latest@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715                                     0.3s
+ => => resolve docker.io/library/alpine:latest@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715                                     0.0s
+ => => sha256:08001109a7d679fe33b04fa51d681bd40b975d8f5cea8c3ef6c0eccb6a7338ce 1.02kB / 1.02kB                                                             0.0s
+ => => sha256:cea2ff433c610f5363017404ce989632e12b953114fefc6f597a58e813c15d61 581B / 581B                                                                 0.0s
+ => => sha256:fe07684b16b82247c3539ed86a65ff37a76138ec25d380bd80c869a1a4c73236 3.80MB / 3.80MB                                                             0.2s
+ => => sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715 9.22kB / 9.22kB                                                             0.0s
+ => => extracting sha256:fe07684b16b82247c3539ed86a65ff37a76138ec25d380bd80c869a1a4c73236                                                                  0.1s
+ => exporting to image                                                                                                                                     0.0s
+ => => exporting layers                                                                                                                                    0.0s
+ => => writing image sha256:05689c0132c18cefc6ff964b91874df0f18f9b6ab2244ff816b32023392e0245                                                               0.0s
+ => => naming to docker.io/library/minitest                                                                                                                0.0s
+Hello, Docker!
+tkeitt@geo:~/projects/docker-tutorial/docker-test$ docker image ls
+REPOSITORY                 TAG             IMAGE ID       CREATED         SIZE
+minitest                   latest          05689c0132c1   5 days ago      8.31MB
+# continues on because I have a bunch of orphan images on geo
+```
 
